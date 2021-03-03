@@ -20,7 +20,7 @@ Customer Features:
 
 ![My ER Diagram](/erDiagram.png)
 
-   __      _\
- o'')}____//\
- `_/      )\
- (_(_/-(_/\
+       __      _\
+     o'')}____//\
+     `_/      )\
+     (_(_/-(_/\
