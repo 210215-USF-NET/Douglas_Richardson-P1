@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <Compile Remove="CartBL.cs" />
+    <Compile Remove="CustomerBL.cs" />
+    <Compile Remove="ICustomerBL.cs" />
+    <Compile Remove="IManagerBL.cs" />
+    <Compile Remove="ItemBL.cs" />
+    <Compile Remove="IUserBL.cs" />
+    <Compile Remove="LocationBL.cs" />
+    <Compile Remove="ManagerBL.cs" />
+    <Compile Remove="OrderBL.cs" />
+    <Compile Remove="ProductBL.cs" />
+    <Compile Remove="UserBL.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StoreModels\StoreModels.csproj" />
+    <ProjectReference Include="..\StoreDL\StoreDL.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
