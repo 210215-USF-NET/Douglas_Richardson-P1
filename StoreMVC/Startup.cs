@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Session;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +34,16 @@ namespace StoreMVC
                     Configuration.GetConnectionString("StoreDB")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-/*            services.AddDefaultIdentity<StoreMVCUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CustomerDBContext>();*/
+            /*            services.AddDefaultIdentity<StoreMVCUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CustomerDBContext>();*/
+
+            //Cookies
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.Cookie.Name = ".TopDog.Session";
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -67,6 +76,8 @@ namespace StoreMVC
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
