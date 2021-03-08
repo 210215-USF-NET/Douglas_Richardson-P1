@@ -4,6 +4,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 Tech Used:
 > C# \
@@ -15,6 +16,8 @@ Tech Used:
 =======
 =======
 >>>>>>> parent of 559d206 (md update)
+=======
+>>>>>>> parent of 559d206 (md update)
 Manager Features:
 > Create new products \
 > Create new locations\
@@ -22,6 +25,8 @@ Manager Features:
 > Look at a locations order history\
 > Search a customer by name\
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
 =======
 
 Customer Features:
@@ -34,6 +39,17 @@ Customer Features:
 > View order history\
 >>>>>>> parent of 559d206 (md update)
 
+Customer Features:
+> Register as a new customer\
+> Login as a returning customer\
+> Choose a location\
+> View the items at that location\
+> Put an item into a cart\
+> Place an order\
+> View order history\
+>>>>>>> parent of 559d206 (md update)
+
+<<<<<<< HEAD
 Customer Features:
 > Register as a new customer\
 > Login as a returning customer\
@@ -47,6 +63,8 @@ Customer Features:
 <<<<<<< HEAD
 ![My ER Diagram](/erDiagram.png)
 
+=======
+>>>>>>> parent of 559d206 (md update)
 =======
 >>>>>>> parent of 559d206 (md update)
        __      _\
