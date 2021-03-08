@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoreDL;
 using StoreModels;
+using StoreBL;
+using StoreMVC.Models.Mappers;
 namespace StoreMVC
 {
     public class Startup
@@ -36,6 +38,12 @@ namespace StoreMVC
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddScoped<ManagerStringBL>();
+            services.AddScoped<ManagerStringRepo>();
+            services.AddScoped<LocationBL>();
+            services.AddScoped<LocationRepo>();
+            services.AddScoped<LocationMapper>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

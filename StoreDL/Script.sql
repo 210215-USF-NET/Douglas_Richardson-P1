@@ -1,0 +1,1 @@
+insert into "ManagerStrings" ("ManagerPhrase") values ('ayupip123');

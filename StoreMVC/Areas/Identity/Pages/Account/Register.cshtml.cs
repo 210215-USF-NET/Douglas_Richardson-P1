@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using StoreModels;
-
+using StoreBL;
 namespace StoreMVC.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
@@ -25,16 +25,21 @@ namespace StoreMVC.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
+        private ManagerStringBL managerStringBL;
+
         public RegisterModel(
             UserManager<StoreMVCUser> userManager,
             SignInManager<StoreMVCUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ManagerStringBL managerStringBL
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            this.managerStringBL = managerStringBL;
         }
 
         [BindProperty]
@@ -87,7 +92,25 @@ namespace StoreMVC.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new StoreMVCUser { UserName = Input.Email, Email = Input.Email , FirstName = Input.FirstName, LastName = Input.LastName};
+                var user = new StoreMVCUser { 
+                    UserName = Input.Email, 
+                    Email = Input.Email , 
+                    FirstName = Input.FirstName, 
+                    LastName = Input.LastName};
+
+                //find manager string
+                if (Input.ManagerString != null)
+                {
+                    string foundManagerString = managerStringBL.GetManagerString(Input.ManagerString);
+                    if (foundManagerString.Equals(Input.ManagerString))
+                    {
+                        //If the string matches, make the user a manager and log it
+                        user.IsManager = true;
+                        managerStringBL.UserWasMadeManager(user.Email);
+                    }
+                }
+
+                //Setup password
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

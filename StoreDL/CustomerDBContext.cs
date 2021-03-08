@@ -19,6 +19,7 @@ namespace StoreDL
         }
 
         public DbSet<Location> Locations {get;set;}
+        public DbSet<ManagerString> ManagerStrings { get;set;}
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

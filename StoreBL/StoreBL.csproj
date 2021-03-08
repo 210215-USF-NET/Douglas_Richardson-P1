@@ -7,11 +7,15 @@
     <Compile Remove="IManagerBL.cs" />
     <Compile Remove="ItemBL.cs" />
     <Compile Remove="IUserBL.cs" />
-    <Compile Remove="LocationBL.cs" />
     <Compile Remove="ManagerBL.cs" />
     <Compile Remove="OrderBL.cs" />
     <Compile Remove="ProductBL.cs" />
     <Compile Remove="UserBL.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
