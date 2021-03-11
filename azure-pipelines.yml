@@ -31,3 +31,15 @@ steps:
     publishWebProjects: false
     zipAfterPublish: true
     projects: '**/StoreMVC/*.csproj'
+- task: SonarCloudAnalyze@1
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloudp1'
+    organization: '210215-usf-net'
+    scannerMode: 'MSBuild'
+    projectKey: '210215-USF-NET_Douglas_Richardson-P1'
+    projectName: 'Douglas_Richardson-P1'
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
