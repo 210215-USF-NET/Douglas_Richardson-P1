@@ -14,10 +14,8 @@
     <Compile Remove="CustomerRepo.cs" />
     <Compile Remove="ICustomerRepo.cs" />
     <Compile Remove="IManagerRepo.cs" />
-    <Compile Remove="ItemRepo.cs" />
     <Compile Remove="ManagerRepo.cs" />
     <Compile Remove="OrderRepo.cs" />
-    <Compile Remove="ProductRepo.cs" />
   </ItemGroup>
 
   <ItemGroup>

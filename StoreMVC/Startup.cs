@@ -52,11 +52,16 @@ namespace StoreMVC
             services.AddScoped<LocationBL>();
             services.AddScoped<LocationRepo>();
             services.AddScoped<LocationMapper>();
+            services.AddScoped<ItemBL>();
+            services.AddScoped<ItemRepo>();
+            services.AddScoped<ItemMapper>();
+            services.AddScoped<ProductBL>();
+            services.AddScoped<ProductRepo>();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -83,9 +88,21 @@ namespace StoreMVC
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Location}/{action=OneLocation}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            Task.Run(() => this.CreateRoles(roleManager)).Wait();
         }
+        private async Task CreateRoles(RoleManager<IdentityRole> roleManager)
+        {
+            if (!await roleManager.RoleExistsAsync("Manager"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Manager"));
+            }
+        }
+
+
     }
+
 }

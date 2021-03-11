@@ -1,34 +1,35 @@
-﻿@model IEnumerable<StoreMVC.Models.LocationModel>
+﻿@model Tuple<List<ManagerLocationModel>, EditItemModel>
 @{
     ViewData["Title"] = "Locations";
 }
-
 <div class="text-center">
-    <h2>Our different Locations</h2>
-
-@*    <p>
-        <a asp-action="Create">Create a new location.</a>
-    </p>*@
+    <h2>Choose a location for @Model.Item2.ProductName</h2>
 </div>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(tuple => tuple.Item1.Single().Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address)
+                @Html.DisplayNameFor(tuple => tuple.Item1.Single().Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.Single().Address)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @if (Model != null)
+        @if (Model.Item1 != null)
         {
-            @foreach (var item in Model)
+            @foreach (var item in Model.Item1)
             {
                 <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
@@ -38,8 +39,8 @@
                     <td>
                         @* Helpers are also used to tie your views to particular actions in controllers *@
                         @* This is an html helper *@
-                        @*@Html.ActionLink("Edit", "EditLocation", new { Id = item.Id })*@
-                        @Html.ActionLink("Choose", "ChosenLocation", new { Id = item.Id, Name = item.Name , Address = item.Address})
+                        @Html.ActionLink("Choose", "ChooseLocationAction", new { LocationId = item.Id, ItemId = Model.Item2.ItemId })
+                        @*@Html.ActionLink("Details", "Details", new { name = item.Name }) |*@
                         @*@Html.ActionLink("Delete", "Delete", new { name = item.Name })*@
                     </td>
                 </tr>

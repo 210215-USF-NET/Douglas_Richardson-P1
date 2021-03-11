@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0 as build
+
+WORKDIR /app
+
+COPY *./sln./
+COPY StoreBL/*.csproj StoreBL/
+COPY StoreDL/*.csproj StoreDL/
+COPY StoreModels/*.csproj StoreModels/
+COPY StoreMVC/*.csproj StoreMVC/
+COPY StoreTest/*.csproj StoreTest/
+
+CMD /bin/bash

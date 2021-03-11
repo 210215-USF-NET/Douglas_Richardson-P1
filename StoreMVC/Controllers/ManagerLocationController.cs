@@ -9,9 +9,11 @@ using StoreMVC.Models;
 using StoreBL;
 using StoreMVC.Models.Mappers;
 using StoreModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StoreMVC.Controllers
 {
+    [Authorize(Roles = "Manager")]
     public class ManagerLocationController : Controller
     {
         private LocationBL locationBL;
@@ -83,6 +85,7 @@ namespace StoreMVC.Controllers
             }
             return View();
         }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

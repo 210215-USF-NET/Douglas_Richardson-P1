@@ -20,7 +20,8 @@ namespace StoreDL
 
         public DbSet<Location> Locations {get;set;}
         public DbSet<ManagerString> ManagerStrings { get;set;}
-
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Product> Products { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

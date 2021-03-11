@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using StoreModels;
 using StoreBL;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using StoreDL;
+
 namespace StoreMVC.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
@@ -98,22 +101,24 @@ namespace StoreMVC.Areas.Identity.Pages.Account
                     FirstName = Input.FirstName, 
                     LastName = Input.LastName};
 
-                //find manager string
-                if (Input.ManagerString != null)
-                {
-                    string foundManagerString = managerStringBL.GetManagerString(Input.ManagerString);
-                    if (foundManagerString.Equals(Input.ManagerString))
-                    {
-                        //If the string matches, make the user a manager and log it
-                        user.IsManager = true;
-                        managerStringBL.UserWasMadeManager(user.Email);
-                    }
-                }
-
                 //Setup password
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+
+                    //find manager string
+                    if (Input.ManagerString != null)
+                    {
+                        string foundManagerString = managerStringBL.GetManagerString(Input.ManagerString);
+                        if (foundManagerString.Equals(Input.ManagerString))
+                        {
+                            //If the string matches, make the user a manager and log it
+                            user.IsManager = true;
+                            managerStringBL.UserWasMadeManager(user.Email);
+                            await _userManager.AddToRoleAsync(user, "Manager");
+                        }
+                    }
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

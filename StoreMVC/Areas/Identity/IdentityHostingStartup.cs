@@ -20,9 +20,11 @@ namespace StoreMVC.Areas.Identity
                     options.UseNpgsql(
                         context.Configuration.GetConnectionString("StoreDB")));
 
-                services.AddDefaultIdentity<StoreMVCUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                services.AddDefaultIdentity<StoreMVCUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<CustomerDBContext>();
             });
+
         }
     }
 }

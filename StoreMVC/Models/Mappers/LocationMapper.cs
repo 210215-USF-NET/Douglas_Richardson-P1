@@ -37,5 +37,15 @@ namespace StoreMVC.Models.Mappers
                 Address = editLocationModel.Address
             };
         }
+
+        public LocationModel castLocationModel(Location location)
+        {
+            return new LocationModel
+            {
+                Address = location.Address,
+                Id = location.Id,
+                Name = location.LocationName
+            };
+        }
     }
 }

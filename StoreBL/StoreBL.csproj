@@ -5,11 +5,9 @@
     <Compile Remove="CustomerBL.cs" />
     <Compile Remove="ICustomerBL.cs" />
     <Compile Remove="IManagerBL.cs" />
-    <Compile Remove="ItemBL.cs" />
     <Compile Remove="IUserBL.cs" />
     <Compile Remove="ManagerBL.cs" />
     <Compile Remove="OrderBL.cs" />
-    <Compile Remove="ProductBL.cs" />
     <Compile Remove="UserBL.cs" />
   </ItemGroup>
 
