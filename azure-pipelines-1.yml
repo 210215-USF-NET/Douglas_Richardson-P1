@@ -49,4 +49,4 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '**/StoreMVC/*.csproj'
-    zipAfterPublish: true
+    zipAfterPublish: false
