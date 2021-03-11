@@ -15,6 +15,13 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloudp1'
+    organization: '210215-usf-net'
+    scannerMode: 'MSBuild'
+    projectKey: '210215-USF-NET_Douglas_Richardson-P1'
+    projectName: 'Douglas_Richardson-P1'
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
@@ -24,6 +31,11 @@ steps:
   inputs:
     command: 'test'
     projects: '**/StoreTest/*.csproj'
+    arguments: --configuration $(buildConfiguration) --collect "Code Coverage"
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '**/coburtura/coverage.xml'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -32,13 +44,7 @@ steps:
     zipAfterPublish: true
     projects: '**/StoreMVC/*.csproj'
 
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'sonarcloudp1'
-    organization: '210215-usf-net'
-    scannerMode: 'MSBuild'
-    projectKey: '210215-USF-NET_Douglas_Richardson-P1'
-    projectName: 'Douglas_Richardson-P1'
+
 - task: SonarCloudAnalyze@1
 - task: SonarCloudPublish@1
   inputs:
