@@ -22,6 +22,9 @@ namespace StoreDL
         public DbSet<ManagerString> ManagerStrings { get;set;}
         public DbSet<Item> Items { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -7,20 +7,13 @@ namespace StoreModels
     /// Orders are created when a customer is using the shop to put products/items in their cart.
     /// Order Histories are separate
     /// </summary>
-    public class Order
+    public class Cart
     {
-        //customerid in customer
-        private Customer customer;
-        private Location location;
-        private double total;
-
-        private bool inCart;
         public Customer Customer { get; set; }
-        public double Total { get; set; }
+        public int Quantity { get; set; }
         public Location Location { get; set; }
+        public Item Item { get; set; }
         public int Id{get;set;}
-        //public Item orderItems{get;set;}
-        //public List<Item> orderItems{get;set;}
         public override string ToString(){
             return Id.ToString()+" "+Location.LocationName+" "+Customer.FirstName;
         }
