@@ -15,13 +15,13 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-# - task: SonarCloudPrepare@1
-#   inputs:
-#     SonarCloud: 'sonarcloudp1'
-#     organization: '210215-usf-net'
-#     scannerMode: 'MSBuild'
-#     projectKey: '210215-USF-NET_Douglas_Richardson-P1'
-#     projectName: 'Douglas_Richardson-P1'
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloudp1'
+    organization: '210215-usf-net'
+    scannerMode: 'MSBuild'
+    projectKey: '210215-USF-NET_Douglas_Richardson-P1'
+    projectName: 'Douglas_Richardson-P1'
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
@@ -44,8 +44,15 @@ steps:
     zipAfterPublish: true
     projects: '**/StoreMVC/*.csproj'
 
+- task: SonarCloudAnalyze@1
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
 
-# - task: SonarCloudAnalyze@1
-# - task: SonarCloudPublish@1
-  # inputs:
-  #   pollingTimeoutSec: '300'
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Azure subscription 1(583825bd-d55a-497c-bfe6-2e3972e128e2)'
+    appType: 'webApp'
+    WebAppName: 'TopDogPetStore'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
