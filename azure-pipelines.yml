@@ -41,7 +41,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    zipAfterPublish: false
+    zipAfterPublish: true
     projects: '**/StoreMVC/*.csproj'
 
 - task: SonarCloudAnalyze@1
