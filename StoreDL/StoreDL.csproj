@@ -10,12 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="CartRepo.cs" />
     <Compile Remove="CustomerRepo.cs" />
     <Compile Remove="ICustomerRepo.cs" />
     <Compile Remove="IManagerRepo.cs" />
     <Compile Remove="ManagerRepo.cs" />
-    <Compile Remove="OrderRepo.cs" />
   </ItemGroup>
 
   <ItemGroup>

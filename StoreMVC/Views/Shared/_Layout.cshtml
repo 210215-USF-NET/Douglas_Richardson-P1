@@ -16,7 +16,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
             <div class="container">
                 @*<button class="btn btn-sm btn-secondary"></button>*@
                 <div id="imgdiv" class="col-sm-1 text-center">
@@ -37,16 +37,16 @@
                             @if (current_User.IsManager)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="ManagerLocation" asp-action="ManagerLocations">Locations</a>
+                                    <a class="nav-link text-light" asp-area="" asp-controller="ManagerLocation" asp-action="ManagerLocations">Locations</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="ManagerItem" asp-action="ManagerItems">Items</a>
+                                    <a class="nav-link text-light" asp-area="" asp-controller="ManagerItem" asp-action="ManagerItems">Items</a>
                                 </li>
                             }
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Location" asp-action="Locations">Locations</a>
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Location" asp-action="Locations">Locations</a>
                                 </li>
                             }
 
@@ -54,12 +54,12 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Location" asp-action="Locations">Locations</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Location" asp-action="Locations">Locations</a>
                             </li>
                         }
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />

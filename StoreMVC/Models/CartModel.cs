@@ -1,11 +1,15 @@
-﻿using System;
-using StoreModels;
+﻿using StoreModels;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace StoreMVC.Models
 {
-    public class ManagerItemModel
+    public class CartModel
     {
+
         [DisplayName("Item Quantity")]
         public int Quantity { get; set; }
         [DisplayName("Location Name")]
@@ -19,7 +23,6 @@ namespace StoreMVC.Models
 
         public int ItemId { get; set; }
         public int LocationId { get; set; }
-        public int ProductId { get; set; }
-        public int ChosenAmount { get; set; }
+        public string CustomerId { get; set; }
     }
 }

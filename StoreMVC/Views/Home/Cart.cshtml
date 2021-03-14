@@ -1,7 +1,195 @@
-﻿@{
-    ViewData["Title"] = "Your Cart";
+﻿@model Tuple<List<CartModel>, LocationModel>
+@{
+    ViewData["Title"] = "Cart";
 }
+@using Microsoft.AspNetCore.Identity;
+@using StoreModels;
+@inject SignInManager<StoreMVCUser> SignInManager
+@inject UserManager<StoreMVCUser> UserManager
+<style>
+
+    /* Dropdown Button */
+    .dropbtn {
+        background-color: #007BFF;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+        /* Dropdown button on hover & focus */
+        .dropbtn:hover, .dropbtn:focus {
+            background-color: #0050A5;
+        }
+
+    /* The container <div> - needed to position the dropdown content */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        border: 0px;
+        outline: 0px;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 100%;
+        z-index: 1;
+        border: 0px;
+        outline: 0px;
+    }
+
+        /* Links inside the dropdown */
+        .dropdown-content button {
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            border: 0px;
+            outline: 0px;
+        }
+
+            /* Change color of dropdown links on hover */
+            .dropdown-content button:hover {
+                background-color: #ddd
+            }
+
+    /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+    .show {
+        display: block;
+    }
+</style>
 
 <div class="text-center">
-    <h2>Hey</h2>
+    @if (Model.Item2 != null)
+    {
+        <h2>Ordering from: @Model.Item2.Name</h2>
+        <h4>At: @Model.Item2.Address</h4>
+        <p>
+            @* asp-action is an example of a tag helper, looks like an attribute of your html element *@
+            <a asp-action="Locations">Choose a new location.</a>
+        </p>
+        @if (ViewBag.Message != null)
+        {
+            <p id="userItemAddedFlavorText" style="color:orangered"><b>@ViewBag.Message</b></p>
+        }
+        @if (Model.Item1 != null)
+        {
+            <h4>Here are the available items</h4>
+        }
+        else
+        {
+            <h4>There are no items in this store</h4>
+        }
+
+    }
 </div>
+
+@{ int chosenAmount = 1;}
+
+<table class="table text-nowrap text-center">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.Single().ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.Single().Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.Single().Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.Single().Quantity)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Item2 != null)
+        {
+            @foreach (var item in Model.Item1)
+            {
+                @if (item.Quantity > 0)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelitem => item.ProductName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelitem => item.Category)
+                        </td>
+                        <td>
+                            $@Html.DisplayFor(modelitem => item.Price)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelitem => item.Quantity)
+                        </td>
+
+                        <td>
+                            <div class="dropdown" style="display: inline-block;">
+                                <button id="quantityButton+@item.ItemId" onclick="myFunction(@item.ItemId)" class="btn dropbtn">Quantity: @chosenAmount</button>
+                                <div id="myDropdown+@item.ItemId" class="dropdown-content">
+                                    @for (int i = 1; i <= item.Quantity; i++)
+                                    {
+                                        <button onclick="setAmount(@i,@item.ItemId)">@i</button>
+                                    }
+                                </div>
+                            </div>
+                            <div style="display:inline-block;">
+                                <form action="@Url.Content("~/CartController/UpdateItem/")" method="post" name="editDescriptionForm">
+                                    <input type="hidden" id="chosenAmountHidden+@item.ItemId" name="updatedQuantity" value=@item.Quantity />
+                                    <input type="hidden" name="itemId" value=@item.ItemId />
+                                    <input type="hidden" name="customerId" value=@item.CustomerId />
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+        else
+        {
+            <tr><td>This store does not exist</td></tr>
+            <tr><td><a asp-action="Locations">Choose a new location.</a></td></tr>
+        }
+
+    </tbody>
+</table>
+
+<script>
+    function myFunction(id) {
+        document.getElementById("myDropdown+" + id).classList.toggle("show");
+    }
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+
+    function setAmount(amount, id) {
+        document.getElementById('chosenAmountHidden+' + id).value = amount;
+        document.getElementById('quantityButton+' + id).innerHTML = "Quantity: " + amount;
+        //alert(document.getElementById('chosenAmountHidden+' +id).value);
+    }
+
+    var myTimer = setInterval(startTimer, 3000);
+    function startTimer() {
+        document.getElementById("userItemAddedFlavorText").style = "display:none";
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

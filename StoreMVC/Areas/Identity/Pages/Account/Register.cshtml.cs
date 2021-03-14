@@ -95,11 +95,32 @@ namespace StoreMVC.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new StoreMVCUser { 
-                    UserName = Input.Email, 
-                    Email = Input.Email , 
-                    FirstName = Input.FirstName, 
-                    LastName = Input.LastName};
+                var user = new StoreMVCUser();
+                string cartIds = Request.Cookies["customerId"];
+                if (cartIds == null)
+                {
+                    user = new StoreMVCUser
+                    {
+                        UserName = Input.Email,
+                        Email = Input.Email,
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName
+                    };
+                }
+                else
+                {
+                    user = new StoreMVCUser
+                    {
+                        UserName = Input.Email,
+                        Email = Input.Email,
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName,
+                        Id = cartIds
+                    };
+                    _logger.LogInformation("user id is "+user.Id);
+/*                    Response.Cookies.Delete("customerId");*/
+                }
+                    
 
                 //Setup password
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -123,14 +144,14 @@ namespace StoreMVC.Areas.Identity.Pages.Account
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+      
                     var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                    protocol: Request.Scheme);
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

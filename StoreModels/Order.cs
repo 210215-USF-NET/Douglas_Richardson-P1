@@ -15,7 +15,7 @@ namespace StoreModels
         private double total;
 
         private bool inCart;
-        public Customer Customer { get; set; }
+        public StoreMVCUser Customer { get; set; }
         public double Total { get; set; }
         public Location Location { get; set; }
         public int Id{get;set;}

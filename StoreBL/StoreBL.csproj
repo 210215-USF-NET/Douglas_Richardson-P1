@@ -1,13 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Compile Remove="CartBL.cs" />
     <Compile Remove="CustomerBL.cs" />
     <Compile Remove="ICustomerBL.cs" />
     <Compile Remove="IManagerBL.cs" />
     <Compile Remove="IUserBL.cs" />
     <Compile Remove="ManagerBL.cs" />
-    <Compile Remove="OrderBL.cs" />
     <Compile Remove="UserBL.cs" />
   </ItemGroup>
 

@@ -9,7 +9,7 @@ namespace StoreModels
     /// </summary>
     public class OrderItem
     {
-        public Customer Customer { get; set; }
+        public StoreMVCUser Customer { get; set; }
         public int Quantity { get; set; }
         public Item Item { get; set; }
         public Order Order { get; set; }

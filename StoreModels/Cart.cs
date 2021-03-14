@@ -9,13 +9,14 @@ namespace StoreModels
     /// </summary>
     public class Cart
     {
-        public Customer Customer { get; set; }
+        //public StoreMVCUser Customer { get; set; }
+        public string CustomerId { get; set; }
         public int Quantity { get; set; }
         public Location Location { get; set; }
         public Item Item { get; set; }
         public int Id{get;set;}
         public override string ToString(){
-            return Id.ToString()+" "+Location.LocationName+" "+Customer.FirstName;
+            return Id.ToString()+" "+Location.LocationName+" "+ CustomerId;
         }
     }
 }

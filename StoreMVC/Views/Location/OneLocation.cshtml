@@ -1,13 +1,17 @@
-﻿@model Tuple<List<ManagerItemModel>, LocationModel>
+﻿@*The list contains all the items in the current location/store, the location is the model for the current store, and finally there is the chosen item that is returned from the controller when the user added an item to the cart.*@
+@model Tuple<List<ManagerItemModel>, LocationModel>
 @{
     ViewData["Title"] = "Locations";
 }
-
+@using Microsoft.AspNetCore.Identity;
+@using StoreModels;
+@inject SignInManager<StoreMVCUser> SignInManager
+@inject UserManager<StoreMVCUser> UserManager
 <style>
 
     /* Dropdown Button */
     .dropbtn {
-        background-color: #3498DB;
+        background-color: #007BFF;
         color: white;
         padding: 16px;
         font-size: 16px;
@@ -17,13 +21,15 @@
 
         /* Dropdown button on hover & focus */
         .dropbtn:hover, .dropbtn:focus {
-            background-color: #2980B9;
+            background-color: #0050A5;
         }
 
     /* The container <div> - needed to position the dropdown content */
     .dropdown {
         position: relative;
         display: inline-block;
+        border: 0px;
+        outline: 0px;
     }
 
     /* Dropdown Content (Hidden by Default) */
@@ -33,23 +39,24 @@
         background-color: #f1f1f1;
         min-width: 100%;
         z-index: 1;
-        outline: 0 !important;
+        border: 0px;
+        outline: 0px;
     }
 
-    /* Links inside the dropdown */
+        /* Links inside the dropdown */
         .dropdown-content button {
             padding: 12px 16px;
             text-decoration: none;
             display: block;
-            box-sizing: border-box;
             width: 100%;
-            outline: 0 !important;
+            border: 0px;
+            outline: 0px;
         }
 
-    /* Change color of dropdown links on hover */
-    .dropdown-content button:hover {
-        background-color: #ddd
-    }
+            /* Change color of dropdown links on hover */
+            .dropdown-content button:hover {
+                background-color: #ddd
+            }
 
     /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
     .show {
@@ -58,25 +65,33 @@
 </style>
 
 <div class="text-center">
-    @if (Model.Item2 != null) {
-        <h2>Our Location: @Model.Item2.Name</h2>
+    @if (Model.Item2 != null)
+    {
+        <h2>@Model.Item2.Name</h2>
         <h4>At: @Model.Item2.Address</h4>
         <p>
             @* asp-action is an example of a tag helper, looks like an attribute of your html element *@
             <a asp-action="Locations">Choose a new location.</a>
         </p>
-        @if (Model.Item1 != null) {
+        @if (ViewBag.Message != null)
+        {
+            <p id="userItemAddedFlavorText" style="color:orangered"><b>@ViewBag.Message</b></p>
+        }
+        @if (Model.Item1 != null)
+        {
             <h4>Here are the available items</h4>
-        } else {
+        }
+        else
+        {
             <h4>There are no items in this store</h4>
         }
 
     }
 </div>
- 
+
 @{ int chosenAmount = 1;}
 
-<table class="table">
+<table class="table text-nowrap text-center">
     <thead>
         <tr>
             <th>
@@ -96,44 +111,86 @@
     <tbody>
         @if (Model.Item2 != null)
         {
-        @foreach (var item in Model.Item1)
+            @foreach (var item in Model.Item1)
             {
-                @if (item.Quantity > 0) {
-                <tr>
+                @if (item.Quantity > 0)
+                {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelitem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelitem => item.Category)
+            </td>
+            <td>
+                $@Html.DisplayFor(modelitem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelitem => item.Quantity)
+            </td>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                var current_User = await UserManager.GetUserAsync(User);
+                @if (current_User.IsManager == false)
+                {
                     <td>
-                        @Html.DisplayFor(modelitem => item.ProductName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelitem => item.Category)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelitem => item.Price)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelitem => item.Quantity)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Add Item", "AddItem", new { Id = item.ItemId })
-                        <asp:hiddenfield id="chosenAmountHidden+@item.ProductId" runat="server"></asp:hiddenfield>
-                        <div class="dropdown">
-                            <button onclick="myFunction(@item.ProductId)" class="dropbtn">Quantity: @chosenAmount</button>
-                            <div id="myDropdown+@item.ProductId" class="dropdown-content">
+                        <div class="dropdown" style="display: inline-block;">
+                            <button id="quantityButton+@item.ItemId" onclick="myFunction(@item.ItemId)" class="btn dropbtn">Quantity: @chosenAmount</button>
+                            <div id="myDropdown+@item.ItemId" class="dropdown-content">
                                 @for (int i = 1; i <= item.Quantity; i++)
                                 {
-                                    <button onclick="setAmount(@i,@item.ProductId)">@i</button>
-
+                                    <button onclick="setAmount(@i,@item.ItemId)">@i</button>
                                 }
                             </div>
                         </div>
+                        <div style="display:inline-block;">
+                            <form asp-action="AddItem">
+                                <input type="hidden" id="chosenAmountHidden+@item.ItemId" asp-for="Item1.FirstOrDefault().ChosenAmount" value=1 />
+                                <input type="hidden" asp-for="Item1.FirstOrDefault().ItemId" value=@item.ItemId />
+                                <input type="hidden" asp-for="Item1.FirstOrDefault().ProductName" value=@item.ProductName />
+                                <input type="hidden" asp-for="Item1.FirstOrDefault().LocationId" value=@item.LocationId />
+                                <input type="submit" value="Add Item" class="btn text-light" style="background-color: #f55554 " />
+                            </form>
+                        </div>
                     </td>
-                </tr>
                 }
-        }
+            }
+            else
+            {
+                <td>
+                    @*<asp:hiddenfield asp-for="itemChosenQuantity" id="chosenAmountHidden+@item.ItemId" value=1 runat="server"></asp:hiddenfield>*@
+                    @*@Html.Hidden("chosenAmountHidden", item.Quantity)
+                @Html.HiddenFor(modelItem => item.Quantity)*@
+                    @* @Html.ActionLink("Add Item", "AddItem", new { Id = item.ItemId })*@
+
+                    <div class="dropdown" style="display: inline-block;">
+                        <button id="quantityButton+@item.ItemId" onclick="myFunction(@item.ItemId)" class="btn dropbtn">Quantity: @chosenAmount</button>
+                        <div id="myDropdown+@item.ItemId" class="dropdown-content">
+                            @for (int i = 1; i <= item.Quantity; i++)
+                            {
+                                <button onclick="setAmount(@i,@item.ItemId)">@i</button>
+                            }
+                        </div>
+                    </div>
+                    <div style="display:inline-block;">
+                        <form asp-action="AddItem">
+                            <input type="hidden" id="chosenAmountHidden+@item.ItemId" asp-for="Item1.FirstOrDefault().ChosenAmount" value=1 />
+                            <input type="hidden" asp-for="Item1.FirstOrDefault().ItemId" value=@item.ItemId />
+                            <input type="hidden" asp-for="Item1.FirstOrDefault().ProductName" value=@item.ProductName />
+                            <input type="hidden" asp-for="Item1.FirstOrDefault().LocationId" value=@item.LocationId />
+                            <input type="submit" value="Add Item" class="btn text-light" style="background-color: #f55554 " />
+                        </form>
+                    </div>
+                </td>
+            }
+        </tr>
+                }
+            }
         }
         else
         {
-        <tr><td>This store does not exist</td></tr>
-        <tr><td><a asp-action="Locations">Choose a new location.</a></td></tr>
+            <tr><td>This store does not exist</td></tr>
+            <tr><td><a asp-action="Locations">Choose a new location.</a></td></tr>
         }
 
     </tbody>
@@ -141,7 +198,7 @@
 
 <script>
     function myFunction(id) {
-        document.getElementById("myDropdown+"+id).classList.toggle("show");
+        document.getElementById("myDropdown+" + id).classList.toggle("show");
     }
 
     // Close the dropdown menu if the user clicks outside of it
@@ -158,9 +215,18 @@
         }
     }
 
-
-    function setAmount(amount,id) {
+    function setAmount(amount, id) {
         document.getElementById('chosenAmountHidden+' + id).value = amount;
-        alert(document.getElementById('chosenAmountHidden+' +id).value);
+        document.getElementById('quantityButton+' + id).innerHTML = "Quantity: " + amount;
+        //alert(document.getElementById('chosenAmountHidden+' +id).value);
+    }
+
+    var myTimer = setInterval(startTimer, 3000);
+    function startTimer() {
+        document.getElementById("userItemAddedFlavorText").style = "display:none";
     }
 </script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
