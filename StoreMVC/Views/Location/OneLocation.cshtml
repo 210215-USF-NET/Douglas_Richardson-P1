@@ -65,7 +65,7 @@
 </style>
 
 <div class="text-center">
-    @if (Model.Item2 != null)
+    @if (Model?.Item2 != null)
     {
         <h2>@Model.Item2.Name</h2>
         <h4>At: @Model.Item2.Address</h4>
@@ -77,7 +77,7 @@
         {
             <p id="userItemAddedFlavorText" style="color:orangered"><b>@ViewBag.Message</b></p>
         }
-        @if (Model.Item1 != null)
+        @if (Model?.Item1 != null)
         {
             <h4>Here are the available items</h4>
         }
@@ -109,7 +109,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model.Item2 != null)
+        @if (Model?.Item2 != null)
         {
             @foreach (var item in Model.Item1)
             {
@@ -149,7 +149,7 @@
                                 <input type="hidden" asp-for="Item1.FirstOrDefault().ItemId" value=@item.ItemId />
                                 <input type="hidden" asp-for="Item1.FirstOrDefault().ProductName" value=@item.ProductName />
                                 <input type="hidden" asp-for="Item1.FirstOrDefault().LocationId" value=@item.LocationId />
-                                <input type="submit" value="Add Item" class="btn text-light" style="background-color: #f55554 " />
+                                <input type="submit" value="Add Item" class="btn text-light" style="background-color: #41ff65" />
                             </form>
                         </div>
                     </td>
@@ -178,7 +178,7 @@
                             <input type="hidden" asp-for="Item1.FirstOrDefault().ItemId" value=@item.ItemId />
                             <input type="hidden" asp-for="Item1.FirstOrDefault().ProductName" value=@item.ProductName />
                             <input type="hidden" asp-for="Item1.FirstOrDefault().LocationId" value=@item.LocationId />
-                            <input type="submit" value="Add Item" class="btn text-light" style="background-color: #f55554 " />
+                            <input type="submit" value="Add Item" class="btn text-light" style="background-color: #41ff65" />
                         </form>
                     </div>
                 </td>

@@ -17,6 +17,7 @@ using StoreModels;
 using StoreBL;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using StoreDL;
+using Microsoft.AspNetCore.Http;
 
 namespace StoreMVC.Areas.Identity.Pages.Account
 {
@@ -115,10 +116,16 @@ namespace StoreMVC.Areas.Identity.Pages.Account
                         Email = Input.Email,
                         FirstName = Input.FirstName,
                         LastName = Input.LastName,
-                        Id = cartIds
                     };
+                    var appUser = _signInManager.UserManager.Users.SingleOrDefault(r => r.Id == cartIds);
+                    if (appUser == null)
+                    {
+                        user.Id = cartIds;
+                    }
+                    CookieOptions option = new CookieOptions();
+                    option.Expires = DateTime.Now.AddYears(-100);
+                    Response.Cookies.Append("customerId", cartIds, option);
                     _logger.LogInformation("user id is "+user.Id);
-/*                    Response.Cookies.Delete("customerId");*/
                 }
                     
 

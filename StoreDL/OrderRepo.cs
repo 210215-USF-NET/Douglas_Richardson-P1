@@ -28,69 +28,74 @@ namespace StoreDL
             return order.Id;
         }
 
-/*        public void UpdateCart(int? cartID, Model.Order order){
-            Entity.Cart thisOrder = context.Carts.Find(cartID);
-            if(order.Customer.FirstName != null){
-                thisOrder.Customer = new CustomerMapper().ParseCustomer(order.Customer);
+        public Tuple<List<Model.OrderHistoryModel>, List<Model.ItemModel>> GetOrder(string email)
+        {
+            string customerId = "";
+            string firstName = "";
+            string lastName = "";
+            var findUser = from users in context.Users
+                           where users.Email.Equals(email)
+                           select new {users.Email,users.Id,users.FirstName,users.LastName};
+            if (findUser != null)
+            {
+                customerId = findUser.FirstOrDefault().Id;
+                firstName = findUser.FirstOrDefault().FirstName;
+                lastName = findUser.FirstOrDefault().LastName;
+                var findOrders = from order in context.Orders
+                             where order.Customer.Id == customerId
+                             select new {order};
+
+                List<Model.OrderHistoryModel> orderHistoryModels = new List<Model.OrderHistoryModel>();
+                foreach (var element in findOrders)
+                {
+                    Model.OrderHistoryModel newOrderHistoryModel = new Model.OrderHistoryModel
+                    {
+                        Email = email,
+                        FirstName = firstName,
+                        LastName = lastName,
+                        Total = element.order.Total
+                    };
+                    orderHistoryModels.Add(newOrderHistoryModel);
+                }//End of adding to orderhistory
+
+                var findItems = from item in context.Items
+                                 join orderitem in context.OrderItems on item.Id equals orderitem.Item.Id
+                                 join order in context.Orders on orderitem.Order.Id equals order.Id
+                                 join product in context.Products on item.Product.Id equals product.Id
+                                 join location in context.Locations on order.Location.Id equals location.Id
+                                 where order.Customer.Id == customerId
+                                 select new { item, location, product, orderitem.Quantity };
+
+                List<Model.ItemModel> itemModels = new List<Model.ItemModel>();
+                foreach (var element in findItems)
+                {
+                    Model.ItemModel newItemModel = new Model.ItemModel
+                    {
+                        Quantity = element.Quantity,
+                        LocationName = element.location.LocationName,
+                        ProductName = element.product.ProductName,
+                        Price = element.product.Price,
+                        Category = element.product.Category,
+                    };
+                    itemModels.Add(newItemModel);
+                }//End of adding to orderhistory
+                var tuple = new Tuple<List<Model.OrderHistoryModel>, List<Model.ItemModel>>(orderHistoryModels, itemModels);
+                return tuple;
             }
-            if(order.Location.LocationName != null){
-                thisOrder.Location = new Mapper.LocationMapper().ParseLocation(order.Location);
+            else
+            {
+                return null;
             }
-            if(order.orderItems.Product != null){
-                thisOrder.Item = new Mapper.ItemMapper().ParseItem(order.orderItems);
-            }           
-            thisOrder.Quantity = order.Quantity;
-            thisOrder.Total = order.Total;
+            
+        }
+
+        public void AddOrderItem(Model.OrderItem orderItem)
+        {
+            context.Entry(orderItem).State = EntityState.Added;
+            context.OrderItems.Add(orderItem);
             context.SaveChanges();
             context.ChangeTracker.Clear();
-        }*/
-
-/*        public List<Model.Order> FindCustomerOrder(int? customerID){
-            var result = from order in context.OrderTables
-            join item in context.Items on order.Item.Id equals item.Id 
-            join location in context.LocationTables on order.Location.Id equals location.Id
-            join product in context.Products on order.Item.Product.Id equals product.Id
-            where order.CustomerId == customerID select new{order.Id,order.Location,order.Item,product,order.Quantity,order.Total};
-            List<Model.Order> thisOrder = new List<Model.Order>();
-            foreach(var getOrder in result){
-                Model.Order newOrder = new Model.Order();
-                newOrder.Location = new Mapper.LocationMapper().ParseLocation(getOrder.Location);
-                newOrder.orderItems = new Mapper.ItemMapper().ParseItem(getOrder.Item);
-                newOrder.orderItems.Product = new Mapper.ProductMapper().ParseProduct(getOrder.product);
-                newOrder.Quantity = (int)getOrder.Quantity;
-                newOrder.Total = (double)getOrder.Total;
-                newOrder.Id = getOrder.Id;
-                thisOrder.Add(newOrder);
-            }
-            return thisOrder;
+            context.Entry(orderItem).State = EntityState.Detached;
         }
-
-        public List<Model.Order> FindLocationOrder(int? locationID){
-            var result = from order in context.OrderTables
-            join item in context.Items on order.Item.Id equals item.Id 
-            join location in context.LocationTables on order.Location.Id equals location.Id
-            join customer in context.Customers on order.CustomerId equals customer.Id
-            join product in context.Products on order.Item.Product.Id equals product.Id
-            where order.LocationId == locationID select new{order.Id,order.Location,order.Item,product,order.Quantity,order.Total,customer};
-            List<Model.Order> thisOrder = new List<Model.Order>();
-            foreach(var getOrder in result){
-                Model.Order newOrder = new Model.Order();
-                newOrder.Location = new Mapper.LocationMapper().ParseLocation(getOrder.Location);
-                newOrder.orderItems = new Mapper.ItemMapper().ParseItem(getOrder.Item);
-                newOrder.orderItems.Product = new Mapper.ProductMapper().ParseProduct(getOrder.product);
-                newOrder.Customer = new CustomerMapper().ParseCustomer(getOrder.customer);
-                newOrder.Quantity = (int)getOrder.Quantity;
-                newOrder.Total = (double)getOrder.Total;
-                newOrder.Id = getOrder.Id;
-                thisOrder.Add(newOrder);
-            }
-            return thisOrder;
-        }*/
-        public List<Model.Order> GetOrder(int? orderID)
-        {
-            var result = from order in context.Orders where order.Id == orderID select order;
-            return result.ToList();
-        }
-
     }//class
 }

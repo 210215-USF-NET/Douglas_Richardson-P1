@@ -30,5 +30,13 @@ namespace StoreBL
             return cartRepo.AddNewCart(cart);
         }
 
+        public void RemoveCart(Cart cart)
+        {
+            cartRepo.RemoveCart(cart);
+        }
+        public void UpdateCustomerInCart(string oldCustomerId, string newCustomerId)
+        {
+            cartRepo.UpdateCustomerInCart(oldCustomerId, newCustomerId);
+        }
     }
 }

@@ -9,14 +9,15 @@ namespace StoreMVC.Models.Mappers
     {
         public CartModel castCartToCartModel(Cart cart)
         {
-            return new ManagerItemModel
+            return new CartModel
             {
                 Quantity = cart.Quantity,
-                ItemId = cart.Id,
-                ProductName = cart.Product.ProductName,
-                Price = cart.Product.Price,
-                Category = cart.Product.Category,
-                ProductId = cart.Product.Id
+                ProductName = "",
+                ItemId = cart.Item.Id,
+                Price = 0.0,
+                Category = Category.Nothing,
+                CustomerId = cart.CustomerId,
+                LocationId = cart.Location.Id,
             };
         }
     }

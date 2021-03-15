@@ -64,28 +64,43 @@
 </style>
 
 <div class="text-center">
-    @if (Model.Item2 != null)
+    @if (Model?.Item2 != null)
     {
         <h2>Ordering from: @Model.Item2.Name</h2>
         <h4>At: @Model.Item2.Address</h4>
-        <p>
-            @* asp-action is an example of a tag helper, looks like an attribute of your html element *@
-            <a asp-action="Locations">Choose a new location.</a>
-        </p>
         @if (ViewBag.Message != null)
         {
             <p id="userItemAddedFlavorText" style="color:orangered"><b>@ViewBag.Message</b></p>
         }
-        @if (Model.Item1 != null)
+        @if (Model?.Item1 != null)
         {
-            <h4>Here are the available items</h4>
+            if (Model?.Item1.Count > 0)
+            {
+                <h4>This is what is in your cart.</h4>
+                <form asp-action="SubmitOrder">
+                    <input type="hidden" name="locationId" value=@Model?.Item2.Id />
+                    <input type="submit" value="Submit your order."/>
+                </form>
+            }
+            else
+            {
+                <h4>Your cart is empty.</h4>
+            }
         }
         else
         {
-            <h4>There are no items in this store</h4>
+            <h4>Your cart is empty.</h4>
         }
 
     }
+    else
+    {
+        <p>
+            You dont have a location selected.
+            <a asp-action="Locations">Choose a new location.</a>
+        </p>
+    }
+
 </div>
 
 @{ int chosenAmount = 1;}
@@ -108,7 +123,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model.Item2 != null)
+        @if (Model?.Item1 != null)
         {
             @foreach (var item in Model.Item1)
             {
@@ -130,19 +145,28 @@
 
                         <td>
                             <div class="dropdown" style="display: inline-block;">
-                                <button id="quantityButton+@item.ItemId" onclick="myFunction(@item.ItemId)" class="btn dropbtn">Quantity: @chosenAmount</button>
+                                <button id="quantityButton+@item.ItemId" onclick="myFunction(@item.ItemId)" class="btn dropbtn">Quantity: @item.Quantity</button>
                                 <div id="myDropdown+@item.ItemId" class="dropdown-content">
-                                    @for (int i = 1; i <= item.Quantity; i++)
+                                    @for (int i = 1; i <= item.MaxQuantity; i++)
                                     {
                                         <button onclick="setAmount(@i,@item.ItemId)">@i</button>
                                     }
                                 </div>
                             </div>
                             <div style="display:inline-block;">
-                                <form action="@Url.Content("~/CartController/UpdateItem/")" method="post" name="editDescriptionForm">
+                                <form asp-action="RemoveItem">
+                                    <input type="hidden" asp-for="Item1.FirstOrDefault().ItemId" value=@item.ItemId />
+                                    <input type="hidden" asp-for="Item1.FirstOrDefault().ProductName" value=@item.ProductName />
+                                    <input type="hidden" asp-for="Item1.FirstOrDefault().LocationId" value=@item.LocationId />
+                                    <input type="submit" value="Remove Item" class="btn text-light" style="background-color: #f55554" />
+                                </form>
+                            </div>
+                            <div style="display:inline-block;">
+                                <form action="@Url.Content("~/Cart/UpdateItem/")" method="post" name="editDescriptionForm+@item.ItemId">
                                     <input type="hidden" id="chosenAmountHidden+@item.ItemId" name="updatedQuantity" value=@item.Quantity />
                                     <input type="hidden" name="itemId" value=@item.ItemId />
-                                    <input type="hidden" name="customerId" value=@item.CustomerId />
+                                    <input type="hidden" name="locationId" value=@item.LocationId />
+                                    @*                                    <input type="hidden" name="customerId" value=@item.CustomerId />*@
                                 </form>
                             </div>
                         </td>
@@ -152,8 +176,7 @@
         }
         else
         {
-            <tr><td>This store does not exist</td></tr>
-            <tr><td><a asp-action="Locations">Choose a new location.</a></td></tr>
+
         }
 
     </tbody>
@@ -178,10 +201,11 @@
         }
     }
 
-    function setAmount(amount, id) {
-        document.getElementById('chosenAmountHidden+' + id).value = amount;
-        document.getElementById('quantityButton+' + id).innerHTML = "Quantity: " + amount;
+    function setAmount(amount, itemId, locationId) {
+        document.getElementById('chosenAmountHidden+' + itemId).value = amount;
+        document.getElementById('quantityButton+' + itemId).innerHTML = "Quantity: " + amount;
         //alert(document.getElementById('chosenAmountHidden+' +id).value);
+        document['editDescriptionForm+' + itemId].submit();
     }
 
     var myTimer = setInterval(startTimer, 3000);

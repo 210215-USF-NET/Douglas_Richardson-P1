@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using StoreModels;
+using StoreBL;
+using Microsoft.AspNetCore.Http;
 
 namespace StoreMVC.Areas.Identity.Pages.Account
 {
@@ -21,14 +23,16 @@ namespace StoreMVC.Areas.Identity.Pages.Account
         private readonly UserManager<StoreMVCUser> _userManager;
         private readonly SignInManager<StoreMVCUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-
+        private readonly CartBL cartBL;
         public LoginModel(SignInManager<StoreMVCUser> signInManager, 
             ILogger<LoginModel> logger,
-            UserManager<StoreMVCUser> userManager)
+            UserManager<StoreMVCUser> userManager,
+            CartBL cartBL)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            this.cartBL = cartBL;
         }
 
         [BindProperty]
@@ -85,7 +89,22 @@ namespace StoreMVC.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    var appUser = _signInManager.UserManager.Users.SingleOrDefault(r => r.Email == Input.Email);
+                    var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+                    var claims = claimsPrincipal.Claims.ToList();
+                    
                     _logger.LogInformation("User logged in.");
+                    string cartIds = Request.Cookies["customerId"];
+                    if (cartIds != null)
+                    {
+                        if (!cartIds.Equals(""))
+                        {
+                            CookieOptions option = new CookieOptions();
+                            option.Expires = DateTime.Now.AddYears(-100);
+                            Response.Cookies.Append("customerId", appUser.Id, option);
+                            cartBL.UpdateCustomerInCart(cartIds, appUser.Id);
+                        }
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

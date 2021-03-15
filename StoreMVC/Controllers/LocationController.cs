@@ -110,7 +110,7 @@ namespace StoreMVC.Controllers
                 option.Expires = DateTime.Now.AddYears(1);
                 Response.Cookies.Append("locationId", Id.ToString(), option);
                 List<Item> items = itemBL.GetItems();
-                if (items != null)
+                if (items != null && items.Count > 0)
                 {
                     items = items.Select(item => item).Where(item => item.ItemLocation != null).ToList();
                     items = items.Select(item => item).Where(item => item.ItemLocation.Id == Id).ToList();
@@ -145,14 +145,34 @@ namespace StoreMVC.Controllers
             var principal = User as ClaimsPrincipal;
             var check = User.Identity.IsAuthenticated;
             StoreMVCUser Customer = new StoreMVCUser();
+
             Cart newCart = new Cart
             {
-                Item = new Item(),
-                Location = new Location(),
                 CustomerId = Customer.Id
             };
-            newCart.Item.Id = managerItemModel.ItemId;
-            newCart.Location.Id = managerItemModel.LocationId;
+
+            Item foundItem = itemBL.GetItemOnId(managerItemModel.ItemId);
+            if (foundItem != null)
+            {
+                newCart.Item = foundItem;
+            }
+            else
+            {
+                newCart.Item = new Item();
+                newCart.Item.Id = managerItemModel.ItemId;
+            }
+
+            Location foundLocation = locationBL.GetLocationFromId(managerItemModel.LocationId);
+            if (foundLocation != null)
+            {
+                newCart.Location = foundLocation;
+            }
+            else
+            {
+                newCart.Location = new Location();
+                newCart.Location.Id = managerItemModel.LocationId;
+            }
+
             newCart.Quantity = managerItemModel.ChosenAmount;
             if (check)
             {
@@ -174,7 +194,21 @@ namespace StoreMVC.Controllers
                 {
                     newCart.CustomerId = cartIds;
                 }//End of check carts
-                int newCartId = cartBL.AddNewCart(newCart);
+                List<Cart> carts = cartBL.GetCartFromCustomer(newCart.CustomerId);
+                if (carts != null)
+                {
+                    foreach (var cart in carts)
+                    {
+                        if (cart.Item.Id == newCart.Item.Id && cart.Location.Id == foundLocation.Id)
+                        {
+                            cart.Quantity = newCart.Quantity;
+                            cartBL.AddNewCart(cart);
+                            ViewBag.Message = "Changed " + managerItemModel.ProductName + " to "+managerItemModel.ChosenAmount;
+                            return OneLocation();
+                        }
+                    }
+                }
+                cartBL.AddNewCart(newCart);
             }//End of check user
             
             

@@ -1,6 +1,8 @@
 using StoreModels;
 using StoreDL;
 using System.Collections.Generic;
+using System;
+
 namespace StoreBL
 {
     /// <summary>
@@ -16,8 +18,13 @@ namespace StoreBL
             return orderRepo.PushOrder(order);
         }
 
-        public List<Order> GetOrder(int? orderId){
-            return orderRepo.GetOrder(orderId);
+        public Tuple<List<OrderHistoryModel>, List<ItemModel>> GetOrder(string email){
+            return orderRepo.GetOrder(email);
+        }
+
+        public void AddOrderItem(OrderItem orderItem)
+        {
+            orderRepo.AddOrderItem(orderItem);
         }
     }
 }

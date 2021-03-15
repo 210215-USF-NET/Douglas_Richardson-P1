@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Serilog;
+using System.Diagnostics;
 namespace StoreDL
 {
     /// <summary>
@@ -13,167 +14,100 @@ namespace StoreDL
     public class CartRepo
     {
         private CustomerDBContext context;
-        public CartRepo(CustomerDBContext context){
+        private readonly ItemRepo itemRepo;
+        public CartRepo(CustomerDBContext context, ItemRepo itemRepo)
+        {
             this.context = context;
+            this.itemRepo = itemRepo;
         }
         public int AddNewCart(Model.Cart cart)
         {
-            context.Entry(cart).State = EntityState.Added;
-            context.Carts.Add(cart);
-            context.SaveChanges();
-            context.ChangeTracker.Clear();
-            context.Entry(cart).State = EntityState.Detached;
+            Tuple<Model.Cart, int> tuple = GetCartFromItemId(cart.Item.Id, cart.CustomerId);
+            if (tuple?.Item1 != null)
+            {
+                context.Entry(cart).State = EntityState.Modified;
+                if (cart.Quantity > tuple?.Item2)
+                {
+                    cart.Quantity = tuple.Item2;
+                }
+                context.SaveChanges();
+                context.ChangeTracker.Clear();
+                context.Entry(cart).State = EntityState.Detached;
+            }
+            else
+            {
+                context.Entry(cart).State = EntityState.Added;
+                context.Carts.Add(cart);
+                context.SaveChanges();
+                context.ChangeTracker.Clear();
+                context.Entry(cart).State = EntityState.Detached;
+            }
+
             return cart.Id;
         }
 
-        public List<Model.Cart> GetCartFromCustomer(string customerID){
-            var result = from cart in context.Carts
-            join customer in context.Users on cart.CustomerId equals customer.Id
-            where cart.CustomerId == customerID select cart;
-            return result.ToList();
-        }
-
-/*        public void UpdateCart(int? cartID, Model.Order order){
-            Model.Order result = GetCartOrder(cartID);
-            context.Carts.AsNoTracking();
-            if(result.Customer == null && order.Customer != null){
-                result = GetCartWithCustomer(cartID,order.Customer.Id);
-            }
-            //Console.WriteLine("result id "+result.Id);
-            if(result != null){
-                Entity.Cart thisOrder = new Mapper.CartMapper().ParseOrder(result);
-                thisOrder.Id = (int)cartID;
-                context.Entry(thisOrder).State = EntityState.Modified;
-                //Console.WriteLine("cartID: "+cartID);
-                            
-                if(order.Customer != null){
-                    thisOrder.CustomerId = order.Customer.Id;
-                }
-                if(order.Location != null){
-                    thisOrder.LocationId = order.Location.LocationID;
-                }
-                if(order.orderItems != null){
-                    thisOrder.ItemId = (int)order.orderItems.ItemID;
-                }                
-                thisOrder.Quantity = order.Quantity;
-                thisOrder.Total = order.Total;
-                
-                context.SaveChanges();
-                context.Entry(thisOrder).State = EntityState.Detached;
-                context.ChangeTracker.Clear();
-                
-            }
-        }
-
-        public Model.Order FindCustomerCartOrder(int? customerID){
-            Model.Order foundOrder = context.Carts.Include("Customer").Select(x => mapper.ParseOrder(x)).ToList().FirstOrDefault(x => x.Customer.Id == customerID);
-            return foundOrder;
-        }
-
-        public Model.Order GetCartWithCustomer(int? cartID, int? customerID){
-            var result = from cart in context.Carts
-            join item in context.Items on cart.Item.Id equals item.Id 
-            join customer in context.Customers on cart.Customer.Id equals customer.Id
-            join location in context.LocationTables on cart.Location.Id equals location.Id
-            join product in context.Products on cart.Item.Product.Id equals product.Id
-            where cart.Id == cartID && cart.CustomerId == customerID select new{cart.Id,cart.Customer,cart.Location,cart.Item,product,cart.Quantity,cart.Total};
-
-            Model.Order thisOrder = new Model.Order();
-            foreach(var getOrder in result){
-                if(getOrder.Id == cartID){
-                    thisOrder.Customer = new CustomerMapper().ParseCustomer(getOrder.Customer);
-                    thisOrder.Location = new Mapper.LocationMapper().ParseLocation(getOrder.Location);
-                    thisOrder.orderItems = new Mapper.ItemMapper().ParseItem(getOrder.Item);
-                    thisOrder.orderItems.Product = new Mapper.ProductMapper().ParseProduct(getOrder.product);
-                    thisOrder.Quantity = (int)getOrder.Quantity;
-                    thisOrder.Total = (double)getOrder.Total;
-                    thisOrder.Id = getOrder.Id;
-                }
-            }
-            return thisOrder;
-        }
-
-        public Model.Order GetCartOrder(int? cartID)
+        public List<Model.Cart> GetCartFromCustomer(string customerID)
         {
-            //Entity.Cart thisOrder = context.Carts.Find(cartID);context.Carts.Select(x => mapper.ParseOrder(x)).ToList().FirstOrDefault(x => x.Id == cartID);
             var result = from cart in context.Carts
-            join item in context.Items on cart.Item.Id equals item.Id 
-            join customer in context.Customers on cart.Customer.Id equals customer.Id
-            join location in context.LocationTables on cart.Location.Id equals location.Id
-            join product in context.Products on cart.Item.Product.Id equals product.Id
-            where cart.Id == cartID select new{cart.Id,cart.Customer,cart.Location,cart.Item,product,cart.Quantity,cart.Total};
-
-            Model.Order thisOrder = new Model.Order();
-            foreach(var getOrder in result){
-                if(getOrder.Id == cartID){
-                    thisOrder.Customer = new CustomerMapper().ParseCustomer(getOrder.Customer);
-                    thisOrder.Location = new Mapper.LocationMapper().ParseLocation(getOrder.Location);
-                    thisOrder.orderItems = new Mapper.ItemMapper().ParseItem(getOrder.Item);
-                    thisOrder.orderItems.Product = new Mapper.ProductMapper().ParseProduct(getOrder.product);
-                    thisOrder.Quantity = (int)getOrder.Quantity;
-                    thisOrder.Total = (double)getOrder.Total;
-                    thisOrder.Id = getOrder.Id;
-                }
+                         join product in context.Products on cart.Item.Product.Id equals product.Id
+                         join location in context.Locations on cart.Location.Id equals location.Id
+                         where cart.CustomerId == customerID
+                         select new { cart, cart.Item, location, product };
+            foreach (var element in result)
+            {
+                element.cart.Item = element.Item;
+                element.cart.Item.Product = element.product;
+                element.cart.Location = element.location;
             }
-            return thisOrder;
+            return result.Select(x => x.cart).ToList();
         }
-        public Model.Order GetCartOrderWithNoCustomer(int? cartID)
+
+        public Tuple<Model.Cart, int> GetCartFromItemId(int itemId, string customerID)
         {
-            //Entity.Cart thisOrder = context.Carts.Find(cartID);context.Carts.Select(x => mapper.ParseOrder(x)).ToList().FirstOrDefault(x => x.Id == cartID);
             var result = from cart in context.Carts
-            join item in context.Items on cart.Item.Id equals item.Id 
-            join location in context.LocationTables on cart.Location.Id equals location.Id
-            join product in context.Products on cart.Item.Product.Id equals product.Id
-            where cart.Id == cartID select new{cart.Id,cart.Location,cart.Item,product,cart.Quantity,cart.Total,cart.CustomerId};
-            Model.Order thisOrder = new Model.Order();
-            foreach(var getOrder in result){
-                if(getOrder.Id == cartID){
-                    thisOrder.Location = new Mapper.LocationMapper().ParseLocation(getOrder.Location);
-                    thisOrder.orderItems = new Mapper.ItemMapper().ParseItem(getOrder.Item);
-                    thisOrder.orderItems.Product = new Mapper.ProductMapper().ParseProduct(getOrder.product);
-                    thisOrder.Quantity = (int)getOrder.Quantity;
-                    thisOrder.Total = (double)getOrder.Total;
-                    thisOrder.Id = getOrder.Id;
-                }
+                         join item in context.Items on cart.Item.Id equals item.Id
+                         join product in context.Products on cart.Item.Product.Id equals product.Id
+                         join location in context.Locations on cart.Location.Id equals location.Id
+                         where cart.CustomerId == customerID && cart.Item.Id == itemId
+                         select new { cart, item, location, product };
+            foreach (var element in result)
+            {
+                element.cart.Item = element.item;
+                element.cart.Item.Product = element.product;
+                element.cart.Location = element.location;
             }
-            return thisOrder;
+
+
+            var tuple = new Tuple<Model.Cart, int>(result.Select(x => x.cart).FirstOrDefault(), result.Select(y => y.item.Quantity).FirstOrDefault());
+
+            return tuple;
         }
 
-        public void EmptyCartNoCustomer(int? cartId){
-            Model.Order result = GetCartOrderWithNoCustomer(cartId);
-            Entity.Cart convertOrder= new Mapper.CartMapper().ParseOrder(result);
-            context.Entry(convertOrder).State = EntityState.Modified;
-            convertOrder.LocationId = null;
-            convertOrder.ItemId = null;
-            convertOrder.Quantity = 0;
-            convertOrder.Total = 0.0;
-            //context.Carts.Remove(convertOrder);
-            try{
-                context.SaveChanges();
-            }catch(Exception e){
-                Log.Error(e.ToString());
-            }
-            context.Entry(convertOrder).State = EntityState.Detached;
+        public void RemoveCart(Model.Cart cart)
+        {
+            context.Entry(cart).State = EntityState.Deleted;
+            context.Carts.Remove(cart);
+            context.SaveChanges();
             context.ChangeTracker.Clear();
+            context.Entry(cart).State = EntityState.Detached;
         }
 
-        public void EmptyCart(int? cartId){
-            Model.Order result = GetCartOrder(cartId);
-            Entity.Cart convertOrder= new Mapper.CartMapper().ParseOrder(result);
-            context.Entry(convertOrder).State = EntityState.Modified;
-            convertOrder.LocationId = null;
-            convertOrder.ItemId = null;
-            convertOrder.Quantity = 0;
-            convertOrder.Total = 0.0;
-            convertOrder.CustomerId = result.Customer.Id;
-            //context.Carts.Remove(convertOrder);
-            try{
-                context.SaveChanges();
-            }catch(Exception e){
-                Log.Error(e.ToString());
+        public void UpdateCustomerInCart(string oldCustomerId, string newCustomerId)
+        {
+            List<Model.Cart> foundList = GetCartFromCustomer(oldCustomerId);
+            foreach (var cart in foundList)
+            {
+                cart.CustomerId = newCustomerId;
+                UpdateCart(cart);
             }
-            context.Entry(convertOrder).State = EntityState.Detached;
+        }
+
+        public void UpdateCart(Model.Cart cart)
+        {
+            context.Entry(cart).State = EntityState.Modified;
+            context.SaveChanges();
             context.ChangeTracker.Clear();
-        }*/
-    }//class
+            context.Entry(cart).State = EntityState.Detached;
+        }
+    }
 }

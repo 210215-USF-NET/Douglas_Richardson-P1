@@ -9,11 +9,13 @@
     //var foundUser = await UserManager.FindByIdAsync(User.Identity.Name);
     var current_User= await UserManager.GetUserAsync(User);
     @if(current_User.IsManager){
-
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="" asp-controller="ManagerFind" asp-action="FindCustomerMenu">Search</a>
+        </li>
     }else{
-    <li class="nav-item">
-        <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Cart">Cart</a>
-    </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="" asp-controller="Cart" asp-action="Cart">Cart</a>
+        </li>
     }
 
     <li class="nav-item">
@@ -28,7 +30,7 @@
     else
     {
     <li class="nav-item">
-        <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Cart">Cart</a>
+        <a class="nav-link text-light" asp-area="" asp-controller="Cart" asp-action="Cart">Cart</a>
     </li>
     <li class="nav-item">
         <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>

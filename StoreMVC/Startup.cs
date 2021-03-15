@@ -59,6 +59,7 @@ namespace StoreMVC
             services.AddScoped<ProductRepo>();
             services.AddScoped<CartBL>();
             services.AddScoped<CartRepo>();
+            services.AddScoped<CartMapper>();
             services.AddScoped<OrderBL>();
             services.AddScoped<OrderRepo>();
 
