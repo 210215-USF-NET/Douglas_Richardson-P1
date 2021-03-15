@@ -18,10 +18,12 @@ namespace StoreMVC.Controllers
     {
         private LocationBL locationBL;
         private LocationMapper locationMapper;
-        public ManagerLocationController(LocationBL locationBL, LocationMapper locationMapper)
+        private OrderBL orderBL;
+        public ManagerLocationController(LocationBL locationBL, LocationMapper locationMapper, OrderBL orderBL)
         {
             this.locationBL = locationBL;
             this.locationMapper = locationMapper;
+            this.orderBL = orderBL;
         }
 
         public IActionResult ManagerLocations()
@@ -84,6 +86,19 @@ namespace StoreMVC.Controllers
                 }
             }
             return View();
+        }
+
+        public ActionResult FindUserHistories(int Id)
+        {
+            List<OrderHistoryModel> userOrders = orderBL.GetOrdersByLocation(Id);
+            return View("ListCustomerOrders", userOrders);
+        }
+
+        public ActionResult DetailsOfOrder(int orderId, int locationId, string email)
+        {
+            List<ItemModel> userItems = orderBL.GetOrderItems(orderId);
+            var tuple = new Tuple<List<ItemModel>, int, string>(userItems, locationId, email);
+            return View("ListCustomerItems", tuple);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

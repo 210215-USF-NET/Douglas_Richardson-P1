@@ -1,0 +1,76 @@
+﻿@using StoreModels;
+@using StoreMVC.Models;
+@using System.Diagnostics;
+@model Tuple<List<ItemModel>,string>
+@{
+    ViewData["Title"] = "User's Order History";
+}
+
+<div class="text-center">
+    @if (Model?.Item1 != null)
+    {
+        <h3>@Html.DisplayFor(tuple => tuple.Item2)'s Order History</h3>
+        <h4>At location: @Html.DisplayFor(tuple => tuple.Item1.FirstOrDefault().LocationName)</h4>
+    }
+
+    @if (Model?.Item2 != null)
+    {
+        if (!Model.Item2.Equals(""))
+        {
+
+            Debug.WriteLine(@Model.Item2);
+            <p>
+                <a asp-controller="ManagerFind" asp-action="FindUserHistoryByRoute" asp-route-email="@Model.Item2">Go Back</a>
+            </p>
+
+        }
+    }
+
+
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.FirstOrDefault().ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.FirstOrDefault().Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.FirstOrDefault().Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1.FirstOrDefault().Quantity)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Item1 != null && Model.Item1.Any())
+        {
+            @foreach (var item in Model.Item1)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelitem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelitem => item.Category)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelitem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelitem => item.Quantity)
+                </td>
+            </tr>
+            }
+        }
+        else
+        {
+            <tr><td>There are no items. </td></tr>
+        }
+
+    </tbody>
+</table>

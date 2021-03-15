@@ -36,8 +36,6 @@
                         @Html.DisplayFor(modelItem => item.Address)
                     </td>
                     <td>
-                        @* Helpers are also used to tie your views to particular actions in controllers *@
-                        @* This is an html helper *@
                         @*@Html.ActionLink("Edit", "EditLocation", new { Id = item.Id })*@
                         @Html.ActionLink("Choose", "ChosenLocation", new { Id = item.Id, Name = item.Name , Address = item.Address})
                         @*@Html.ActionLink("Delete", "Delete", new { name = item.Name })*@

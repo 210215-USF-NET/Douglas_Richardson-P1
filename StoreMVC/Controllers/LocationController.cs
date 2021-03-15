@@ -178,6 +178,19 @@ namespace StoreMVC.Controllers
             {
                 Debug.WriteLine("LocationController: Customer is logged in");
                 newCart.CustomerId = GetUser().Result.Id;
+                List<Cart> carts = cartBL.GetCartFromCustomer(newCart.CustomerId);
+                if (carts != null)
+                {
+                    foreach (var cart in carts)
+                    {
+                        if (cart.Item.Id == newCart.Item.Id && cart.Location.Id == foundLocation.Id)
+                        {
+                            cartBL.AddNewCart(newCart);
+                            ViewBag.Message = "Changed " + managerItemModel.ProductName + " to " + managerItemModel.ChosenAmount;
+                            return OneLocation();
+                        }
+                    }
+                }
                 cartBL.AddNewCart(newCart);
             }
             else
@@ -197,22 +210,23 @@ namespace StoreMVC.Controllers
                 List<Cart> carts = cartBL.GetCartFromCustomer(newCart.CustomerId);
                 if (carts != null)
                 {
+                    
                     foreach (var cart in carts)
                     {
                         if (cart.Item.Id == newCart.Item.Id && cart.Location.Id == foundLocation.Id)
                         {
-                            cart.Quantity = newCart.Quantity;
-                            cartBL.AddNewCart(cart);
+                            cartBL.AddNewCart(newCart);
                             ViewBag.Message = "Changed " + managerItemModel.ProductName + " to "+managerItemModel.ChosenAmount;
                             return OneLocation();
                         }
                     }
+                    
                 }
                 cartBL.AddNewCart(newCart);
             }//End of check user
-            
-            
-            ViewBag.Message = "Added "+managerItemModel.ChosenAmount+" of "+managerItemModel.ProductName;
+
+
+            ViewBag.Message = "Added " + managerItemModel.ChosenAmount + " of " + managerItemModel.ProductName;
             return OneLocation();
         }
 

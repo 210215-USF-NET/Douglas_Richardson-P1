@@ -6,13 +6,16 @@ namespace StoreModels
 {
     public class OrderHistoryModel
     {
-        [DisplayName("Email")]
-        public string Email { get; set; }
+        [DisplayName("Location")]
+        public string LocationName { get; set; }
         [DisplayName("First Name")]
         public string FirstName { get; set; }
         [DisplayName("Last Name")]
         public string LastName { get; set; }
         [DisplayName("Order Total")]
         public double Total { get; set; }
+        public int Id { get; set; }
+        public int LocationId { get; set; }
+        public string Email { get; set; }
     }
 }

@@ -18,10 +18,18 @@ namespace StoreBL
             return orderRepo.PushOrder(order);
         }
 
-        public Tuple<List<OrderHistoryModel>, List<ItemModel>> GetOrder(string email){
+        public List<OrderHistoryModel>GetOrder(string email){
             return orderRepo.GetOrder(email);
         }
+        public List<OrderHistoryModel> GetOrdersByLocation(int locationId){
+            return orderRepo.GetOrdersByLocation(locationId);
+        }
 
+        public List<ItemModel> GetOrderItems(int orderId)
+        {
+            return orderRepo.GetOrderItems(orderId);
+        }
+ 
         public void AddOrderItem(OrderItem orderItem)
         {
             orderRepo.AddOrderItem(orderItem);

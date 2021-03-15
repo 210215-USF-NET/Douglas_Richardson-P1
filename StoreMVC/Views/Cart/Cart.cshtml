@@ -63,6 +63,15 @@
     }
 </style>
 
+@*Get the total price for the user*@
+@{ double totalPrice = 0.0;}
+@if (Model?.Item1 != null)
+{
+    @foreach (var item in Model.Item1)
+    {
+        totalPrice += item.Price * item.Quantity;
+    }
+}
 <div class="text-center">
     @if (Model?.Item2 != null)
     {
@@ -77,6 +86,7 @@
             if (Model?.Item1.Count > 0)
             {
                 <h4>This is what is in your cart.</h4>
+                <h5>Your total is: $@totalPrice </h5>
                 <form asp-action="SubmitOrder">
                     <input type="hidden" name="locationId" value=@Model?.Item2.Id />
                     <input type="submit" value="Submit your order."/>

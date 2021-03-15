@@ -25,14 +25,18 @@ namespace StoreDL
             Tuple<Model.Cart, int> tuple = GetCartFromItemId(cart.Item.Id, cart.CustomerId);
             if (tuple?.Item1 != null)
             {
-                context.Entry(cart).State = EntityState.Modified;
+                context.Entry(tuple.Item1).State = EntityState.Modified;
                 if (cart.Quantity > tuple?.Item2)
                 {
-                    cart.Quantity = tuple.Item2;
+                    tuple.Item1.Quantity = tuple.Item2;
+                }
+                else
+                {
+                    tuple.Item1.Quantity = cart.Quantity;
                 }
                 context.SaveChanges();
                 context.ChangeTracker.Clear();
-                context.Entry(cart).State = EntityState.Detached;
+                context.Entry(tuple.Item1).State = EntityState.Detached;
             }
             else
             {

@@ -15,12 +15,12 @@ using Microsoft.AspNetCore.Identity;
 namespace StoreMVC.Controllers
 {
 
-    [Authorize(Roles = "Manager")]
-    public class ManagerFindController : Controller
+    [Authorize]
+    public class CustomerFindController : Controller
     {
         private readonly OrderBL orderBL;
         private readonly UserManager<StoreMVCUser> userManager;
-        public ManagerFindController(OrderBL orderBL, UserManager<StoreMVCUser> userManager)
+        public CustomerFindController(OrderBL orderBL, UserManager<StoreMVCUser> userManager)
         {
             this.orderBL = orderBL;
             this.userManager = userManager;
@@ -37,8 +37,8 @@ namespace StoreMVC.Controllers
             return View("ListCustomerOrders", userOrders);
         }
 
-        [Route("/ManagerFind/FindUserHistoryByRoute/{email}")]
-        public ActionResult FindUserHistoryByRoute(string email)
+        [Route("/CustomerFind/FindHistoryByRoute/{email}")]
+        public ActionResult FindHistoryByRoute(string email)
         {
             List<OrderHistoryModel> userOrders = orderBL.GetOrder(email);
             return View("ListCustomerOrders", userOrders);

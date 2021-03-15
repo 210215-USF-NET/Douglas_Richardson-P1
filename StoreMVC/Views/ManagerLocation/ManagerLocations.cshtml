@@ -45,8 +45,8 @@
                     <td>
                         @* Helpers are also used to tie your views to particular actions in controllers *@
                         @* This is an html helper *@
-                        @Html.ActionLink("Edit", "EditLocation", new { Id = item.Id })
-                        @*@Html.ActionLink("Details", "Details", new { name = item.Name }) |*@
+                        @Html.ActionLink("Edit", "EditLocation", new { Id = item.Id }) | 
+                        @Html.ActionLink("Orders", "FindUserHistories", new { Id = item.Id })
                         @*@Html.ActionLink("Delete", "Delete", new { name = item.Name })*@
                     </td>
                 </tr>
