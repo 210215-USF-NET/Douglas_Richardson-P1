@@ -2,71 +2,36 @@
 ## A Project One
 ### By: Douglas Richardson
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
 Tech Used:
 > C# \
-> Microsoft SQL Server \
+> PostgreSQL DB \
 > Microsoft Azure \
+> Microsoft Azure DevOps \
 > Entity Framework Core 5 \
 > Serilog Framework \
-> Xunit 
-=======
-=======
->>>>>>> parent of 559d206 (md update)
-=======
->>>>>>> parent of 559d206 (md update)
+> ASP.NET MVC \
+> ASP.NET Core Security
+
+
 Manager Features:
 > Create new products \
 > Create new locations\
 > Give products locations and quantities\
 > Look at a locations order history\
-> Search a customer by name\
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
+> Search a customer by name
+
 
 Customer Features:
-> Register as a new customer\
-> Login as a returning customer\
-> Choose a location\
-> View the items at that location\
-> Put an item into a cart\
-> Place an order\
-> View order history\
->>>>>>> parent of 559d206 (md update)
+> Register as a new customer \
+> Login as a returning customer \
+> Choose a location \
+> View the items at that location \
+> Put an items into a cart \
+> Place an order \
+> View order history \
 
-Customer Features:
-> Register as a new customer\
-> Login as a returning customer\
-> Choose a location\
-> View the items at that location\
-> Put an item into a cart\
-> Place an order\
-> View order history\
->>>>>>> parent of 559d206 (md update)
-
-<<<<<<< HEAD
-Customer Features:
-> Register as a new customer\
-> Login as a returning customer\
-> Choose a location\
-> View the items at that location\
-> Put an item into a cart\
-> Place an order\
-> View order history\
->>>>>>> parent of 559d206 (md update)
-
-<<<<<<< HEAD
 ![My ER Diagram](/erDiagram.png)
 
-=======
->>>>>>> parent of 559d206 (md update)
-=======
->>>>>>> parent of 559d206 (md update)
        __      _\
      o'')}____//\
      `_/      )\

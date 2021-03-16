@@ -16,6 +16,7 @@ namespace StoreBL
         }
         public void AddItemToRepo(Item Item){
             itemRepo.AddNewItem(Item);
+            Log.Information("New Item " + Item.Product.ProductName);
         }
         public void UpdateItem(Item Item){
             itemRepo.UpdateItem(Item);

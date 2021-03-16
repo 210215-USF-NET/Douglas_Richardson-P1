@@ -27,6 +27,7 @@ namespace StoreBL
         }
         
         public int AddNewCart(Cart cart){
+            Log.Information("User updated their cart" + cart);
             return cartRepo.AddNewCart(cart);
         }
 
