@@ -28,7 +28,7 @@ Customer Features:
 > View the items at that location \
 > Put an items into a cart \
 > Place an order \
-> View order history \
+> View order history
 
 ![My ER Diagram](/erDiagram.png)
 

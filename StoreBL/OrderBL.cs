@@ -2,6 +2,7 @@ using StoreModels;
 using StoreDL;
 using System.Collections.Generic;
 using System;
+using Serilog;
 
 namespace StoreBL
 {
@@ -33,6 +34,7 @@ namespace StoreBL
         public void AddOrderItem(OrderItem orderItem)
         {
             orderRepo.AddOrderItem(orderItem);
+            Log.Information("New order item was added. Id: " + orderItem.Id);
         }
     }
 }
